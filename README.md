@@ -1,7 +1,7 @@
 
 ![logo_ironhack_blue 7](https://user-images.githubusercontent.com/23629340/40541063-a07a0a8a-601a-11e8-91b5-2f13e4e6b441.png)
 
-# Project | Module 3
+# Project | Machine Learning Models Evaluation
 
 
 ## Introduction
@@ -18,40 +18,11 @@ Each group will need to research and implement the defined supervised machine le
 
 3. As soon as your dataset is ready, please start the research about your models. Please note, that each group member should research at least 1 model.
 
-Group 1:
-- RidgeClassifier
-- SVC
-- CategoricalNB
-- ExtraTreesClassifier
-- Gradient Tree Boosting
-- GaussianNB
-- DecisionTreeClassifier
-
-Group 2:
 - Logistic regression
 - NuSVC
 - BernoulliNB 
 - AdaBoostClassifier
 - Linear Discriminant Analysis
-
-Group 3:
-- LinearSVC
-- KNeighborsClassifier
-- PassiveAggressiveClassifier
-- SGDClassifier
-- ComplementNB
-
-Group 4:
-- VotingClassifier
-- Callibration
-- HistGradientBoostingClassifier 
-
-Group 5:
-- GaussianProcessClassifier
-- BaggingClassifier
-- MultinomialNB
-- Quadratic Discriminant Analysis
-- Stacking
 
 4. Feature selection (if needed)
 
