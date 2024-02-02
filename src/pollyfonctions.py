@@ -39,6 +39,9 @@ def import_models():
     from sklearn.model_selection import StratifiedKFold, cross_val_predict
     from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
 
+
+
+
 def print_exploratory_data(data):
     ''' data = {"dataname": dataframe}'''
     '''EDA: it takes a dictionary with one or more dataframes and prints the information about it'''
@@ -84,14 +87,25 @@ def print_max_min_values(dataframe):
 # print_overall_max_min_values(dataframe)
     
 
+def spliting(X, y):
+       '''take 2 dataframes X and y and split it unto train and test
+       return
+       X_train, X_test, y_train, y_test = split(X, y)'''
+       print(X.head())
+       print(y.head())
+       X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.20, random_state=7986)
+       return X_train, X_test, y_train, y_test
+# X_train, X_test, y_train, y_test = split(X, y)
 
-def scaler_data(X_train, X_test,y_train, y_test):
+
+
+def scaler_data(X_train, X_test, y_train, y_test, X_data):
     ''' X_train, X_test, y_train, y_test = scaler_data(X_train, X_test, y_train, y_test)'''
     scaler = MinMaxScaler()
     X_train = scaler.fit_transform(X_train)
     X_test = scaler.fit_transform(X_test)
-    X_train = pd.DataFrame(X_train, columns=X.columns)
-    X_test = pd.DataFrame(X_test, columns=X.columns)
+    X_train = pd.DataFrame(X_train, columns=X_data.columns)
+    X_test = pd.DataFrame(X_test, columns=X_data.columns)
     y_train = y_train.reset_index(drop=True)
     y_test = y_test.reset_index(drop=True)
     return X_train, X_test, y_train, y_test
@@ -168,6 +182,31 @@ def corr_matrix(data):
 # correlations_matrix = corr_matrix(websites)
 # correlations_matrix
 
+# high_corr_threshold = 0.8
+# highly_correlated_pairs = []
+
+def corre_cols(correlations_matrix, high_corr_threshold, highly_correlated_pairs):
+    '''still doesn`t work
+    it takes a correlations matrix and create a list of highly correlated columns in a dataframe
+    highly_correlated_pairs = list_correlated_col(correlations_matrix, high_corr_threshold)'''
+    #highly_correlated_pairs = []
+    for i in range(len(correlations_matrix.columns)):
+        for j in range(i):
+            if abs(correlations_matrix.iloc[i, j]) > high_corr_threshold:
+                col_pair = (correlations_matrix.columns[i], correlations_matrix.columns[j], correlations_matrix.iloc[i, j])
+                highly_correlated_pairs.append(col_pair)
+
+    #print(f"Number of highly correlated pairs: {len(highly_correlated_pairs)}")
+    #return highly_correlated_pairs
+
+# highly_correlated_pairs = list_correlated_col(correlations_matrix, high_corr_threshold)
+
+
+def print_highly_correlated_pairs(highly_correlated_pairs):
+    ''' it takes a list of correlated columns and print it'''
+    for pair in highly_correlated_pairs:
+        print(f"Columns: {pair[0]} and {pair[1]} - Correlation: {pair[2]}")
+
 
 def create_heatmap(data, dataname):
     '''2 Create a heatmap using `seaborn` to visualize which columns have high collinearity.'''
@@ -189,6 +228,10 @@ def drop_col(data, coltodrop):
 
 #data = drop_col(data, coltodrop)
 
+def fix_col_names(df):
+    df.columns = df.columns.str.strip().str.lower().str.replace(r'\s+','_',regex=True)
+    return df
+
 
 #models
 def model_errors(y_test, y_test_pred):
@@ -203,6 +246,7 @@ def print_classes(dataseries):
     count_classes = dataseries.value_counts()
     print(count_classes)
     count_classes.plot(kind = 'bar')
+
 
 
 from sklearn.model_selection import StratifiedKFold, cross_val_predict
@@ -252,3 +296,5 @@ def evaluate_models(list_models, scoring_metrics, num_folds, X_train, y_train):
         print("\n")
     return results
         
+
+
