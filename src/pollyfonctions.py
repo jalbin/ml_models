@@ -124,12 +124,18 @@ def scaler_X_Y(X_train, X_test, y_train, y_test, X_data):
 
 
 def print_roc_curve(model_name, model, X_test, y_test):
-    Y_score = model.predict_proba(X_test)[:,1]
+    Y_score = model.predict_proba(X_test)[:, 1]
+    # Check for non-finite values in Y_score
+    if not np.all(np.isfinite(Y_score)):
+        # Handle non-finite values by replacing them with a large finite value
+        Y_score[np.isnan(Y_score)] = np.max(Y_score[np.isfinite(Y_score)])
     fpr, tpr, thresholds = roc_curve(y_test, Y_score)
     plt.title(f"ROC curve for {model_name}")
     plt.xlabel("False positive rate")
     plt.ylabel("True positive rate")
-    plt.plot(fpr, tpr);
+    plt.plot(fpr, tpr)
+
+
 
 def split_scaler_data(X, y, t_size):
     print(X.head())
@@ -147,22 +153,24 @@ def split_scaler_data(X, y, t_size):
 # X_train, X_test, y_train, y_test = split_scaler_data(X, y, t_size)
 
 def fit_predict_evaluate_fonction(model_name, model, X_train, X_test, y_train, y_test, results):
-    ''' fit predicts and evalueate model and add results to a table results'''
+    ''' fit predicts and evaluate model and add results to a table results'''
     
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
     score = model.score(X_test, y_test)
+    f1 = f1_score(y_test, y_pred)
     precision = precision_score(y_test, y_pred)
     recall = recall_score(y_test, y_pred)
     ''' Recall'''
     #(y_pred & y_test).sum() / y_test.sum()
-    print(f"score: {score}")
+    print(f"Model score: {score}")
+    print(f"F1 score: {f1}")
     print(f"accuracy score: {accuracy}")
     print(f"precision_score: {precision}")
     print(f"recall_score: {recall}")
     confusion_matr = confusion_matrix(y_test, y_pred)
-    print((y_pred & y_test).sum())
+    print(f"y_pred & y_test: {(y_pred & y_test).sum()}")
     ''' Create subplots'''
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
     disp = ConfusionMatrixDisplay(confusion_matr, display_labels=model.classes_)
@@ -175,9 +183,9 @@ def fit_predict_evaluate_fonction(model_name, model, X_train, X_test, y_train, y
     new_result = pd.DataFrame({'model_name': model_name,'accuracy': accuracy,'precision':precision,'recall':recall,'f1_score':f1,'false_negatives':false_negatives},index=[0])   
     results = pd.concat([results, new_result],axis=0)
     disp = print_roc_curve(model_name, model, X_test, y_test)
-    disp = print_roc_curve(model_name, model, X_test, y_test)
     if disp is not None:
         disp.plot(ax=ax2)
+    print(results)
     return accuracy, precision, recall, y_pred, results
 
 
