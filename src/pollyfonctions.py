@@ -16,8 +16,12 @@ import re # regex
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
 from sklearn import svm
-from sklearn.model_selection import StratifiedKFold, cross_val_predict
+from sklearn.model_selection import StratifiedKFold, cross_val_predict, cross_val_score, cross_validate
 from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
+from sklearn import linear_model
+from sklearn.feature_selection import VarianceThreshold, SelectKBest, f_regression, RFE
+from sklearn.tree import DecisionTreeClassifier
+
 
 def import_models():
     import numpy as np
@@ -36,8 +40,11 @@ def import_models():
     from sklearn.neighbors import KNeighborsClassifier
     from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
     from sklearn import svm
-    from sklearn.model_selection import StratifiedKFold, cross_val_predict
+    from sklearn.model_selection import StratifiedKFold, cross_val_predict, cross_val_score, cross_validate
     from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
+    from sklearn import linear_model
+    from sklearn.feature_selection import VarianceThreshold, SelectKBest, f_regression, RFE
+    from sklearn.tree import DecisionTreeClassifier
 
 
 
@@ -62,7 +69,7 @@ def print_exploratory_data(data):
         print(f'Data Type "{name}":\n{typ}\n')
     for name, d in data.items():    
         empty = d.isna().sum()
-        print(f'Empty "{name}":\n{typ}\n')
+        print(f'Empty "{name}":\n{empty}\n')
 
     for name, d in data.items():
         num_columns = d.select_dtypes(np.number).columns
@@ -87,20 +94,22 @@ def print_max_min_values(dataframe):
 # print_overall_max_min_values(dataframe)
     
 
-def spliting(X, y):
+def spliting(X, y, t_size):
        '''take 2 dataframes X and y and split it unto train and test
        return
-       X_train, X_test, y_train, y_test = split(X, y)'''
-       print(X.head())
-       print(y.head())
-       X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.20, random_state=7986)
+       X_train, X_test, y_train, y_test '''
+       X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=t_size, random_state=7986)
        return X_train, X_test, y_train, y_test
-# X_train, X_test, y_train, y_test = split(X, y)
+# X_train, X_test, y_train, y_test = split(X, y, t_size)
 
+def scaling(data):
+    scaler = MinMaxScaler()
+    data_scaled = scaler.fit_transform(data)
+    data_scaled = pd.DataFrame(data_scaled, columns=data.columns)
+    return data_scaled
 
-
-def scaler_data(X_train, X_test, y_train, y_test, X_data):
-    ''' X_train, X_test, y_train, y_test = scaler_data(X_train, X_test, y_train, y_test)'''
+def scaler_X_Y(X_train, X_test, y_train, y_test, X_data):
+    ''' X_train, X_test, y_train, y_test  scaler_data(X_train, X_test, y_train, y_test)'''
     scaler = MinMaxScaler()
     X_train = scaler.fit_transform(X_train)
     X_test = scaler.fit_transform(X_test)
@@ -114,32 +123,54 @@ def scaler_data(X_train, X_test, y_train, y_test, X_data):
 
 
 
-def print_y_score(model_name, model, X_test, y_test):
-    Y_score = model.predict_proba(X_test)[:,1]
+def print_roc_curve(model_name, model, X_test, y_test):
+    Y_score = model.predict_proba(X_test)[:, 1]
+    # Check for non-finite values in Y_score
+    if not np.all(np.isfinite(Y_score)):
+        # Handle non-finite values by replacing them with a large finite value
+        Y_score[np.isnan(Y_score)] = np.max(Y_score[np.isfinite(Y_score)])
     fpr, tpr, thresholds = roc_curve(y_test, Y_score)
     plt.title(f"ROC curve for {model_name}")
     plt.xlabel("False positive rate")
     plt.ylabel("True positive rate")
-    plt.plot(fpr, tpr);
+    plt.plot(fpr, tpr)
 
+
+
+def split_scaler_data(X, y, t_size):
+    print(X.head())
+    print(y.head())
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size= t_size, random_state=7986)
+    scaler = MinMaxScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
+    X_train = pd.DataFrame(X_train, columns=X.columns)
+    X_test = pd.DataFrame(X_test, columns=X.columns)
+    y_train = y_train.reset_index(drop=True)
+    y_test = y_test.reset_index(drop=True)
+    return X_train, X_test, y_train, y_test
+
+# X_train, X_test, y_train, y_test = split_scaler_data(X, y, t_size)
 
 def fit_predict_evaluate_fonction(model_name, model, X_train, X_test, y_train, y_test, results):
-    ''' fit predicts and evalueate model and add results to a table results'''
-    results = pd.DataFrame(columns=['model_name','accuracy','precision','recall','f1_score', 'false_negatives'])
+    ''' fit predicts and evaluate model and add results to a table results'''
+    
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
     score = model.score(X_test, y_test)
+    f1 = f1_score(y_test, y_pred)
     precision = precision_score(y_test, y_pred)
     recall = recall_score(y_test, y_pred)
     ''' Recall'''
     #(y_pred & y_test).sum() / y_test.sum()
-    print(f"score: {score}")
+    print(f"Model score: {score}")
+    print(f"F1 score: {f1}")
     print(f"accuracy score: {accuracy}")
     print(f"precision_score: {precision}")
     print(f"recall_score: {recall}")
     confusion_matr = confusion_matrix(y_test, y_pred)
-    print((y_pred & y_test).sum())
+    print(f"y_pred & y_test: {(y_pred & y_test).sum()}")
     ''' Create subplots'''
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
     disp = ConfusionMatrixDisplay(confusion_matr, display_labels=model.classes_)
@@ -151,7 +182,10 @@ def fit_predict_evaluate_fonction(model_name, model, X_train, X_test, y_train, y
     false_negatives = confusion_matr[1][0]
     new_result = pd.DataFrame({'model_name': model_name,'accuracy': accuracy,'precision':precision,'recall':recall,'f1_score':f1,'false_negatives':false_negatives},index=[0])   
     results = pd.concat([results, new_result],axis=0)
-    print_y_score(model_name, X_test, y_test)
+    disp = print_roc_curve(model_name, model, X_test, y_test)
+    if disp is not None:
+        disp.plot(ax=ax2)
+    print(results)
     return accuracy, precision, recall, y_pred, results
 
 
@@ -234,9 +268,9 @@ def fix_col_names(df):
 
 
 #models
-def model_errors(y_test, y_test_pred):
+def model_errors(y_test, y_pred):
     '''print a histogram with the model errors'''
-    errors = (y_test - y_test_pred).abs() / y_test
+    errors = (y_test - y_pred).abs() / y_test
     errors.hist()
     print(f"Model errors: {errors}")
     return errors
@@ -298,3 +332,90 @@ def evaluate_models(list_models, scoring_metrics, num_folds, X_train, y_train):
         
 
 
+
+
+def eliminate_highly_correlated_columns_based_test(df, df_kbest, high_corr_threshold=0.8):
+    ''' this fonction takes a dataframe df, a dataframe of k_best scores, a high_corr_threshold= 
+    and returns a new dataframe without the columns highly correlated, and a list of columns to drop'''
+    # Calculate correlation matrix
+    correlations_matrix = df.corr().abs()
+    
+    # Get the intersection of columns between df and df_kbest
+    common_columns = list(set(df.columns) & set(df_kbest['column_name']))
+
+    # Initialize a set to store columns to eliminate
+    columns_to_eliminate = set()
+
+    for i in range(len(correlations_matrix.columns)):
+        for j in range(i):
+            col_i = correlations_matrix.columns[i]
+            col_j = correlations_matrix.columns[j]
+            
+            # Check if both columns are present in the common_columns list
+            if col_i in common_columns and col_j in common_columns:
+                # Check if correlation is above the threshold
+                if abs(correlations_matrix.loc[col_i, col_j]) > high_corr_threshold:
+                    # Choose which column to eliminate based on k-best scores
+                    score_i = df_kbest.loc[df_kbest['column_name'] == col_i, 'kbest_score'].values[0]
+                    score_j = df_kbest.loc[df_kbest['column_name'] == col_j, 'kbest_score'].values[0]
+
+                    # Keep the one with lower k-best score
+                    column_to_eliminate = col_i if score_i < score_j else col_j
+                    columns_to_eliminate.add(column_to_eliminate)
+    df_result = df.drop(columns=columns_to_eliminate)
+    print("Original DataFrame Shape:")
+    print(df.shape)
+    print("\nThis is the list of highly correlated columns to eliminate:")
+    print(columns_to_eliminate)
+    print("\nDataFrame after eliminating highly correlated columns:")
+    print(df_result.shape)
+    # Create a new DataFrame without the eliminated columns
+   
+
+    return df_result, columns_to_eliminate
+
+
+
+# generating data frames
+
+
+
+
+def generates_X_best_ktest(df, columns_ranks, number_features):
+    ''' Takes a dataframe, a columns rank dataframe, a number_features and generates the X dataframe'''
+    columns_top_kbest = list(columns_ranks.sort_values(by = ['kbest_score'], ascending = False).head(number_features)['column_name'])
+    X_data = df[columns_top_kbest]
+    return X_data
+
+# X = generates_X_df_best_ktest(df, columns_ranks, 20)
+
+
+def generate_X_top20_rfe(df, columns_ranks):
+    ''' Takes a dataframe, a columns rank dataframe and 
+    generates the X dataframe with the top rfe_rank columns'''
+    columns = list(columns_ranks[columns_ranks["rfe_rank"] == 1].sort_values(["kbest_score"], ascending=False)["column_name"])
+    X_data = df[columns]
+    return X_data
+
+# X = generate_X_df_best_rfe(df, columns_ranks)
+
+
+
+def generate_X_best_rfe(df, columns_ranks, features):
+    ''' Takes a dataframe, a columns rank dataframe, a number_features and generates the X dataframe'''
+    columns = list(columns_ranks[columns_ranks["rfe_rank"] <= features].sort_values(["kbest_score"], ascending=False)["column_name"])
+    X_data = df[columns]
+    return X_data
+
+# X = generate_X_df_best_rfe(df, columns_ranks)
+
+def choice_rank(rank, features, df, columns_ranks):
+    '''takes a rank between rfe and kbest and generates X from a dataframe'''
+    if rank == "rfe":
+        X_data = generate_X_best_rfe(df, columns_ranks, features)
+    if rank == "kbest":
+         X_data = generate_X_best_rfe(df, columns_ranks, features)
+    return X_data
+
+
+    
