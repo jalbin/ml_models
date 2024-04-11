@@ -12,13 +12,13 @@ Models implemented:
 - AdaBoostClassifier
 - Linear Discriminant Analysis
 
-<a href="https://docs.google.com/presentation/d/1tdpORTf7XnyaB9SCRnna4Ib4ey8XRpHnNzF5j7Y6mhs/edit?usp=sharing"> Presentation: </a>
+<a href="https://docs.google.com/presentation/d/1tdpORTf7XnyaB9SCRnna4Ib4ey8XRpHnNzF5j7Y6mhs/edit?usp=sharing"> Final Presentation </a>
 
 ## Steps
 
 1. EDA and data cleaning.
 
-2. EDA and descriptive analytics
+2. Descriptive analytics
 
 3. Model research.
 
