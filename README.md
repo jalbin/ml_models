@@ -1,4 +1,4 @@
-<h1>Machine Learning Models Evaluation Using Taiwan Bankruptcy Data</h1>
+<h1>Evaluation of the performance of machine learning models for predicting bankruptcies in Taiwan</h1>
 (Évaluation de la performance de modèles de machine learning pour la prédiction de faillites à Taïwan)
 
 
