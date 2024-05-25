@@ -1,22 +1,35 @@
-
-![logo_ironhack_blue 7](https://user-images.githubusercontent.com/23629340/40541063-a07a0a8a-601a-11e8-91b5-2f13e4e6b441.png)
-
-# Project | Machine Learning Models Evaluation
+<h1>Evaluation of the performance of machine learning models for predicting bankruptcies in Taiwan</h1>
+(Évaluation de la performance de modèles de machine learning pour la prédiction de faillites à Taïwan)
 
 
 ## Introduction
 
-The goal of this project is to practise in supervised learning using provided data. We need to create the model for the prediction/classification. 
-Each group will need to research and implement the defined supervised machine learning methods.
+The goal of this project was to implement and evaluate supervised learning models using the Taiwan Bankruptcy Data. We created models for the prediction/classification and compared the metrics between the different models to determine the ones that performed better. 
+
+Models implemented: 
+- Logistic regression
+- NuSVC
+- BernoulliNB 
+- AdaBoostClassifier
+- Linear Discriminant Analysis
+
+<a href="https://docs.google.com/presentation/d/1tdpORTf7XnyaB9SCRnna4Ib4ey8XRpHnNzF5j7Y6mhs/edit?usp=sharing"> Final Presentation </a>
+
+## Steps
+
+1. Descriptive analytics, data cleaning and formatting
+   
+2.Data preparation for machine learning and Feature selection:
+   
+- verification of correlation and 
+- reducing the number of variables, 
+- feature selection using VarianceThreshold , XGBoost, Kbest and Recursive Feature 
+- oversampling
+- data scaling
+- splitting the dataset (train/test)
 
 
-## Getting Started
-
-1. Please perform EDA and data cleaning.
-
-2. Please conduct EDA and descriptive analytics
-
-3. As soon as your dataset is ready, please start the research about your models. Please note, that each group member should research at least 1 model.
+3. Model research.
 
 - Logistic regression
 - NuSVC
@@ -24,49 +37,17 @@ Each group will need to research and implement the defined supervised machine le
 - AdaBoostClassifier
 - Linear Discriminant Analysis
 
-4. Feature selection (if needed)
 
-5. Implement your models on your data
 
-6. Do not forget about Hyperparameters tuning
-7. Implement AutoML (TPOT)
+4. Implemented the models on our data
 
-8. Compare the results using metrics:
+5. Hyperparameters tuning
+
+6. Comparing the results using metrics:
+   
 - accuracy
 - recall
 - precision
 - ROC_AUC score
 - plot ROC_AUC curve
 
-## Expectations
-
-- Clean, well-commented code
-- Clean data with EDA
-- Clear board in Trello with logged time for each task
-- Clear descriprion of each model
-- Models implementation and comparison
-
-## Deliverables
-
-- '1. data.csv with clean and encoded data
-- '2. project7.ipynb' with all code concerning data cleaning and modelling
-- '3. Slides/dashboard/notebook with must-have EDA, each model description (how it works, what the parameters are, what exectly you used) and results (for each model and final table with models comparison).
-- '4. Please state the conclusion about usability of each model.
-- '5. Trello board with logged time.
-
-## Time expectations
-- Data cleaning 2 hours 
-- Data preprocessing (features, scaling) 1 hours
-- Models investigation 3 hours - this task can be splited
-- Models implementation - 2 hours
-- Slides/dashboard/notebook - 2 hours
-- Finalization and "beautification" (github, etc)  - 2 hours
-Average time per person 4-6 hours
-
-
-## Submission
-
-Upon completion, add your deliverables to git. Then commit git and push your branch to the remote.
-
-## Sources
-https://scikit-learn.org/stable/index.html
