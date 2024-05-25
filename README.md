@@ -17,9 +17,17 @@ Models implemented:
 
 ## Steps
 
-1. EDA and data cleaning.
+1. Descriptive analytics, data cleaning and formatting
+   
+2.Data preparation for machine learning and Feature selection:
+   
+- verification of correlation and 
+- reducing the number of variables, 
+- feature selection using VarianceThreshold , XGBoost, Kbest and Recursive Feature 
+- oversampling
+- data scaling
+- splitting the dataset (train/test)
 
-2. Descriptive analytics
 
 3. Model research.
 
@@ -29,7 +37,7 @@ Models implemented:
 - AdaBoostClassifier
 - Linear Discriminant Analysis
 
-4. Feature selection
+
 
 5. Implemented the models on our data
 
