@@ -39,11 +39,12 @@ Models implemented:
 
 
 
-5. Implemented the models on our data
+4. Implemented the models on our data
 
-6. Hyperparameters tuning
+5. Hyperparameters tuning
 
-7. Comparing the results using metrics:
+6. Comparing the results using metrics:
+   
 - accuracy
 - recall
 - precision
